@@ -59,7 +59,7 @@ def parse_gt_file(file_path):
         
         for line in f:
             
-            image_id, height, width, encoded_pixels = line.strip().split(',')
+            image_id, height, width, encoded_pixels = line.strip().split(' ')
             height = int(height)
             width = int(width)
             mask = decode_rle(encoded_pixels, height, width)
