@@ -18,10 +18,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import cv2
-from data_prep import parse_gt_file
-from data_augmentation import color_aug
-from mask_rcnn import get_model_instance_segmentation
-from tracker import Siamese_Network
 
 # Data Preparation
 def decode_rle(encoded_mask, height, width):
@@ -382,7 +378,7 @@ def main():
     Main function to load data, initialize models, and train them.
     """
     # Configuration
-    gt_file = 'gt_train.txt' # Path to the ground truth file
+    gt_file = 'D:\\RIT\\Classes\\Fall_24\\Robot_Perception\\assign3\\MOTS\\train\\MOTS20-02\\gt\\gt.txt' # Path to the ground truth file
     num_classes = 2 # Number of classes (background + human)
     batch_size = 4 # Batch size for training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # Use CUDA if available
