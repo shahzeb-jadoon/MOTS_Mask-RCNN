@@ -400,6 +400,12 @@ def train_siamese_network(model, dataloader, optimizer, device, num_epochs):
         avg_loss = total_loss / num_batches # Calculate average loss for the epoch
         print(f"Epoch {epoch+1}/{num_epochs}, Average Loss: {avg_loss:.4f}") # Print epoch loss
 
+def collate_fn(batch):
+    """
+    Custom collate function for the DataLoader
+    """
+    return tuple(zip(*batch))
+
 def main():
     """
     Main function to load data, initialize models, and train them.
@@ -423,7 +429,7 @@ def main():
         batch_size=batch_size,
         shuffle=True,
         num_workers=4, # Use 4 worker processes for data loading
-        collate_fn=lambda x: tuple(zip(*x)) # Custom collate function for the DataLoader
+        collate_fn=collate_fn # Use the defined function instead of lambda
     )
     
     siamese_dataloader = torch.utils.data.DataLoader(
