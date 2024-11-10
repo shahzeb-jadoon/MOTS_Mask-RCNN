@@ -130,7 +130,8 @@ class CustomDataset(torch.utils.data.Dataset):
                        - 'boxes': Tensor of bounding boxes for the objects in the image.
         """
         image_id, mask = self.data[idx]
-        image = cv2.imread(f"images/{image_id}.jpg")
+        image_id = image_id.split("_")[0].zfill(6)
+        image = cv2.imread(f"D:\\RIT\\Classes\\Fall_24\\Robot_Perception\\assign3\\MOTS\\train\\MOTS20-02\\img1\\{image_id}.jpg")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # Convert from BGR to RGB
         
         if self.transform:
