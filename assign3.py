@@ -46,6 +46,8 @@ def decode_rle(encoded_mask, height, width):
 def parse_gt_file(file_path):
     """
     Parses the ground truth file containing image IDs and their corresponding masks.
+    This function is adapted to handle the MOTS dataset format, where each line contains:
+    frame_id track_id class_id height width encoded_pixels
 
     Args:
         file_path (str): Path to the ground truth file.
@@ -58,11 +60,19 @@ def parse_gt_file(file_path):
     with open(file_path, 'r') as f:
         
         for line in f:
-            
-            image_id, height, width, encoded_pixels = line.strip().split(' ')
+            # Split by spaces and unpack only the first 5 values
+            parts = line.strip().split()
+            # Extract the frame ID, track ID, class ID, height, and width
+            frame_id, track_id, class_id, height, width = parts[:5]
+            # Join the remaining parts as the encoded pixels
+            encoded_pixels = ' '.join(parts[5:])
             height = int(height)
             width = int(width)
+            # Create image_id from frame and track IDs
+            image_id = f"{frame_id}_{track_id}"
+            # Decode the run-length encoded mask
             mask = decode_rle(encoded_pixels, height, width)
+            # Append the image ID and mask to the data list
             data.append((image_id, mask))
             
     return data
