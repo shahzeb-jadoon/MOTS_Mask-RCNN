@@ -32,15 +32,32 @@ def decode_rle(encoded_mask, height, width):
     Returns:
         numpy.ndarray: Decoded binary mask as a NumPy array.
     """
-    mask = np.zeros(height * width, dtype=np.uint8)
-    encoded_mask = encoded_mask.split()
+    mask = np.zeros(height * width, dtype=np.uint8)  # Initialize an array with zeros for the mask
     
-    for i in range(0, len(encoded_mask), 2):
-        
-        start = int(encoded_mask[i]) - 1
-        length = int(encoded_mask[i + 1])
-        mask[start:start + length] = 1
-        
+    try:
+        # Clean and split the encoded mask by replacing backslashes with spaces
+        encoded_parts = encoded_mask.replace('\\', ' ').split()
+
+        current_pos = 0  # Initialize the current position in the mask array
+        for value in encoded_parts:
+            try:
+                # Try converting the value to an integer
+                count = int(value)
+                
+                # If the value is a valid integer, fill the mask array with 1s
+                if current_pos + count <= len(mask):
+                    mask[current_pos:current_pos + count] = 1
+                    current_pos += count  # Update the current position
+            except ValueError:
+                # Skip non-numeric values
+                continue
+
+    except Exception as e:
+        # If any error occurs during decoding, print the error and return an empty mask
+        print(f"Error decoding mask: {e}")
+        return np.zeros((height, width), dtype=np.uint8)
+
+    # Reshape the mask array to the specified height and width
     return mask.reshape((height, width), order='F')
 
 def parse_gt_file(file_path):
