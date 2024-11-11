@@ -249,13 +249,13 @@ class SiameseDataset(torch.utils.data.Dataset):
         idx1, idx2, label = self.pairs[idx]
         
         # Load first image
-        img1_id = self.data[idx1][0]
-        img1 = cv2.imread(f"images/{img1_id}.jpg")
+        img1_id = self.data[idx1][0].split('_')[0].zfill(6)
+        img1 = cv2.imread(f"D:\\RIT\\Classes\\Fall_24\\Robot_Perception\\assign3\\MOTS\\train\\MOTS20-02\\img1\\{img1_id}.jpg")
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB) # Convert from BGR to RGB
         
         # Load second image
-        img2_id = self.data[idx2][0]
-        img2 = cv2.imread(f"images/{img2_id}.jpg")
+        img2_id = self.data[idx2][0].split('_')[0].zfill(6)
+        img2 = cv2.imread(f"D:\\RIT\\Classes\\Fall_24\\Robot_Perception\\assign3\\MOTS\\train\\MOTS20-02\\img1\\{img2_id}.jpg")
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB) # Convert from BGR to RGB
         
         if self.transform:
@@ -435,7 +435,6 @@ def main():
     num_classes = 2 # Number of classes (background + human)
     batch_size = 4 # Batch size for training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # Use CUDA if available
-    print(device)
     num_epochs_mask_rcnn = 10 # Number of epochs to train Mask R-CNN
     num_epochs_siamese = 10 # Number of epochs to train Siamese Network
 
