@@ -156,7 +156,7 @@ class CustomDataset(torch.utils.data.Dataset):
     
     def _get_bbox(self, mask):
         """
-        Calculates the bounding box for a given mask.
+        Calculates the bounding box for a given mask with minimum size enforcement.
 
         Args:
             mask (numpy.ndarray): Binary mask array.
@@ -165,10 +165,29 @@ class CustomDataset(torch.utils.data.Dataset):
             torch.Tensor: Bounding box coordinates as a tensor (xmin, ymin, xmax, ymax).
         """
         pos = np.where(mask)
+        
+        if pos[0].size == 0:  # Empty mask
+            # Return default box (0,0,1,1) or handle as needed
+            return torch.tensor([[0, 0, 1, 1]], dtype=torch.float32)
+    
         xmin = np.min(pos[1])
         xmax = np.max(pos[1])
         ymin = np.min(pos[0])
         ymax = np.max(pos[0])
+        
+        # Ensure minimum box dimensions
+        width = xmax - xmin + 1
+        height = ymax - ymin + 1
+        
+        if width < 2:
+            xmax = xmin + 2  # Minimum width of 2 pixels
+            
+        if height < 2:
+            ymax = ymin + 2  # Minimum height of 2 pixels
+        
+        # Additional sanity checks
+        if xmin == xmax or ymin == ymax:
+            return torch.tensor([[0, 0, 2, 2]], dtype=torch.float32)
         
         return torch.tensor([[xmin, ymin, xmax, ymax]], dtype=torch.float32)
 
@@ -416,6 +435,7 @@ def main():
     num_classes = 2 # Number of classes (background + human)
     batch_size = 4 # Batch size for training
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # Use CUDA if available
+    print(device)
     num_epochs_mask_rcnn = 10 # Number of epochs to train Mask R-CNN
     num_epochs_siamese = 10 # Number of epochs to train Siamese Network
 
