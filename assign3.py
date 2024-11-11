@@ -314,10 +314,12 @@ class Siamese_Network(nn.Module):
         Initializes the Siamese Network with convolutional and fully connected layers.
         """
         super(Siamese_Network, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=3)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3)
         self.conv2 = nn.Conv2d(64, 128, kernel_size=3)
         self.conv3 = nn.Conv2d(128, 128, kernel_size=3)
-        self.fc1 = nn.Linear(128 * 22 * 22, 256)  # Adjust input size if needed
+        # Add adaptive pooling to handle variable input sizes
+        self.adaptive_pool = nn.AdaptiveAvgPool2d((7, 7))
+        self.fc1 = nn.Linear(128 * 7 * 7, 256)  # Adjust input size if needed
         self.fc2 = nn.Linear(256, 256)
 
     def forward_one(self, x):
@@ -333,9 +335,11 @@ class Siamese_Network(nn.Module):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
         x = F.relu(F.max_pool2d(self.conv2(x), 2))
         x = F.relu(self.conv3(x))
-        x = x.view(-1, 128 * 22 * 22)  # Adjust input size if needed
+        x = self.adaptive_pool(x)
+        x = x.view(x.size(0), -1)  # Flattened - Adjust input size if needed
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
+        
         return x
 
     def forward(self, input1, input2):
@@ -351,6 +355,7 @@ class Siamese_Network(nn.Module):
         """
         output1 = self.forward_one(input1)
         output2 = self.forward_one(input2)
+        
         return output1, output2
 
 # Main
@@ -472,9 +477,9 @@ def main():
     siamese_optimizer = torch.optim.Adam(siamese_model.parameters())
 
     # Train models
-    print("Training Mask R-CNN...")
-    train_mask_rcnn(mask_rcnn_model, mask_rcnn_dataloader, mask_rcnn_optimizer, 
-                   device, num_epochs_mask_rcnn)
+    #print("Training Mask R-CNN...")
+    #train_mask_rcnn(mask_rcnn_model, mask_rcnn_dataloader, mask_rcnn_optimizer, 
+    #               device, num_epochs_mask_rcnn)
     
     print("Training Siamese Network...")
     train_siamese_network(siamese_model, siamese_dataloader, siamese_optimizer, 
