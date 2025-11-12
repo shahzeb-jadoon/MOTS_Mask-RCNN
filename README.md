@@ -50,7 +50,9 @@ The tracking pipeline achieves both accuracy and efficiency by leveraging **deep
 
 ## 🎥 Project Demo
 
-[Watch a full demonstration of the project here.](YOUR_VIDEO_LINK_HERE)
+
+https://github.com/user-attachments/assets/31eb53d4-c45e-489a-ac4f-345c7a29d687
+
 
 ---
 
